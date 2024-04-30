@@ -1,5 +1,3 @@
- 
-
 const express = require('express');
 const app = express();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -10,7 +8,12 @@ const port = process.env.PORT || 5000;
 
 
 // middelware
-// app.use();
+app.use(cors({
+    origin: [
+        'http://localhost:3000',
+    ],
+    credentials: true
+}));
 app.use(express.json())
 
 
@@ -31,7 +34,16 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         // await client.connect();
 
-       
+        const userCollection = client.db('JobTask').collection('users');
+
+
+        // user related api
+        app.get('/users', async (req, res) => {
+            const result = await userCollection.find().toArray();
+            res.send(result);
+        })
+
+
 
         // Send a ping to confirm a successful connection
         // await client.db("admin").command({ ping: 1 });
