@@ -1,4 +1,4 @@
-const express = require('express');
+ const express = require('express');
 const app = express();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
@@ -35,6 +35,7 @@ async function run() {
         // await client.connect();
 
         const userCollection = client.db('JobTask').collection('users');
+        const taskCollection = client.db('JobTask').collection('tasks');
 
 
         // user related api
@@ -42,14 +43,70 @@ async function run() {
             const result = await userCollection.find().toArray();
             res.send(result);
         })
-        
+
         app.post('/users', async (req, res) => {
             const createUser = req.body;
             const result = await userCollection.insertOne(createUser);
             res.send(result);
         })
 
+        // task related api
+        app.get('/tasks', async (req, res) => {
+            const result = await taskCollection.find().toArray();
+            res.send(result);
+        })
 
+        app.post('/tasks', async (req, res) => {
+            const createTask = req.body;
+            const result = await taskCollection.insertOne(createTask);
+            res.send(result);
+        })
+
+        app.get('/tasks/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await taskCollection.findOne(query);
+            res.send(result);
+        })
+
+        app.delete('/tasks/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await taskCollection.deleteOne(query);
+            res.send(result);
+        })
+
+        app.patch('/tasks/:id', async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            const filter = { _id: new ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    position: data.newPosition
+                }
+            }
+            const result = await taskCollection.updateOne(filter, updatedDoc);
+            res.send(result);
+        })
+
+        app.put('/tasks/:id', async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true }
+            const updatedTask = {
+                $set: {
+                    name: data.name,
+                    title: data.title,
+                    priority: data.priority,
+                    dadline: data.dadline,
+                    description: data.description,
+                    position: data.position,
+                }
+            }
+            const result = await taskCollection.updateOne(filter, updatedTask, options);
+            res.send(result);
+        })
 
 
         // Send a ping to confirm a successful connection
