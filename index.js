@@ -42,6 +42,13 @@ async function run() {
             const result = await userCollection.find().toArray();
             res.send(result);
         })
+        
+        app.post('/users', async (req, res) => {
+            const createUser = req.body;
+            const result = await userCollection.insertOne(createUser);
+            res.send(result);
+        })
+
 
 
 
