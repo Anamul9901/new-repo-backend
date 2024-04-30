@@ -71,6 +71,7 @@ async function run() {
 
         app.delete('/tasks/:id', async (req, res) => {
             const id = req.params.id;
+            console.log(id);
             const query = { _id: new ObjectId(id) }
             const result = await taskCollection.deleteOne(query);
             res.send(result);
@@ -79,10 +80,11 @@ async function run() {
         app.patch('/tasks/:id', async (req, res) => {
             const id = req.params.id;
             const data = req.body;
+            console.log(data);
             const filter = { _id: new ObjectId(id) };
             const updatedDoc = {
                 $set: {
-                    position: data.newPosition
+                    position: data.position
                 }
             }
             const result = await taskCollection.updateOne(filter, updatedDoc);
@@ -92,6 +94,7 @@ async function run() {
         app.put('/tasks/:id', async (req, res) => {
             const id = req.params.id;
             const data = req.body;
+            console.log(data);
             const filter = { _id: new ObjectId(id) }
             const options = { upsert: true }
             const updatedTask = {
