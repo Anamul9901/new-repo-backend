@@ -49,56 +49,60 @@ async function run() {
 
     // projects related api
     app.get("/projects", async (req, res) => {
-        const result = await projectsCollection.find().toArray();
-        res.send(result);
-      });
-  
-      app.post("/projects", async (req, res) => {
-        const createProject = req.body;
-        const result = await projectsCollection.insertOne(createProject);
-        res.send(result);
-      });
+      const result = await projectsCollection.find().toArray();
+      res.send(result);
+    });
 
-      app.get("/projects/:id", async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: new ObjectId(id) };
-        const result = await projectsCollection.findOne(query);
-        res.send(result);
-      });
-  
-      app.delete("/projects/:id", async (req, res) => {
-        const id = req.params.id;
-        console.log(id);
-        const query = { _id: new ObjectId(id) };
-        const result = await projectsCollection.deleteOne(query);
-        res.send(result);
-      });
+    app.post("/projects", async (req, res) => {
+      const createProject = req.body;
+      const result = await projectsCollection.insertOne(createProject);
+      res.send(result);
+    });
 
-      app.put("/projects/:id", async (req, res) => {
-        const id = req.params.id;
-        const data = req.body;
-        console.log(data);
-        const filter = { _id: new ObjectId(id) };
-        const options = { upsert: true };
-        const updatedTask = {
-          $set: {
-            name: data.name,
-            priority: data.priority,
-            description: data.description,
-            position: data.position,
-          },
-        };
-        const result = await taskCollection.updateOne(
-          filter,
-          updatedTask,
-          options
-        );
-        res.send(result);
-      });
+    app.get("/projects/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await projectsCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.delete("/projects/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: new ObjectId(id) };
+      const result = await projectsCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.put("/projects/:id", async (req, res) => {
+      const id = req.params.id;
+      const data = req.body;
+      console.log(data);
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedTask = {
+        $set: {
+          name: data.name,
+          dadline: data.dadline,
+          description: data.description,
+        },
+      };
+      const result = await projectsCollection.updateOne(
+        filter,
+        updatedTask,
+        options
+      );
+      res.send(result);
+    });
 
     // task related api
     app.get("/tasks", async (req, res) => {
-      const result = await taskCollection.find().toArray();
+      const filter = req.query;
+      console.log(filter);
+      const query = {
+        name: { $regex: filter.search, $options: "i" },
+      };
+      const result = await taskCollection.find(query).toArray();
       res.send(result);
     });
 
